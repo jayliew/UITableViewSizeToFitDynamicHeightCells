@@ -13,6 +13,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet var tableView: UITableView!
     @IBOutlet var tableViewHeightConstraint: NSLayoutConstraint!
     
+    @IBOutlet var parentView: UIView!
+    
+    @IBOutlet var parentViewHeightConstraint: NSLayoutConstraint!
+    
     let data = ["this is a short line.",
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Excepteur sint. deserunt mollit anim id est laborum.",
                 "another short line.",
@@ -31,17 +35,31 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     } // viewDiDload
 
     override func viewDidAppear(_ animated: Bool) {
-        var newFrame = self.tableView.frame;
-        newFrame.size.height = self.tableView.contentSize.height;
-        self.tableView.frame = newFrame;
+        super.viewDidAppear(animated)
+        
+        // If I add this new frame for the table's parent view,
+        // the table view height gets chopped off. See 3 lines below
+        var newFrameForParent = self.parentView.frame
+        newFrameForParent.size.height = self.tableView.contentSize.height
+        self.parentView.frame = newFrameForParent
+        // But if I comment out the above 3 lines, the table view
+        // height is fine (table height fits actual dynamic content size)
+        // but the table's parent view is shorter than the table view
+        
+        var newFrame = self.tableView.frame
+        newFrame.size.height = self.tableView.contentSize.height
+        self.tableView.frame = newFrame
+
         print("viewDidAppear: tableView contentSize w: \(tableView.contentSize.width) h: \(tableView.contentSize.height)")
-    }
+        
+    } // viewDidAppear
     
     override func viewWillLayoutSubviews() {
         super.updateViewConstraints()
         self.tableViewHeightConstraint.constant = self.tableView.contentSize.height
+        //self.parentViewHeightConstraint.constant = self.tableView.contentSize.height + 20
         print("viewWillLayoutSubviews: tableView contentSize w: \(tableView.contentSize.width) h: \(tableView.contentSize.height)")
-    }
+    } // viewWillLayoutSubviews
 
     override func viewWillAppear(_ animated: Bool) {
         //tableView.sizeToFit()
